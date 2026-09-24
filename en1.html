@@ -317,8 +317,11 @@ details.sandbox summary{cursor:pointer;font-weight:700;font-size:.92rem}
     root.appendChild(h('p', { class: 'lead', text: G.intro }));
     var b = banner(); if (b) root.appendChild(b);
 
-    var input = h('input', { class: 'inp', id: 'email', type: 'email', name: 'email', autocomplete: 'email', inputmode: 'email', autocapitalize: 'none', spellcheck: 'false', placeholder: 'meno.priezvisko@skola.sk', required: '' });
-    input.value = LS.get('edl_email') || '';
+    var domainSuffix = CFG.allowedDomain ? '@' + CFG.allowedDomain : '';
+    var input = h('input', { class: 'inp', id: 'email', type: 'email', name: 'email', autocomplete: 'email', inputmode: 'email', autocapitalize: 'none', spellcheck: 'false', placeholder: domainSuffix ? ('meno.priezvisko' + domainSuffix) : 'meno.priezvisko@skola.sk', required: '' });
+    var savedEmail = LS.get('edl_email');
+    input.value = savedEmail || domainSuffix;
+    input.addEventListener('focus', function () { if (input.value === domainSuffix) input.setSelectionRange(0, 0); });
     var err = h('p', { class: 'err', role: 'alert', id: 'email-err' });
     var consentBox = h('input', { type: 'checkbox', id: 'consent' });
     consentBox.checked = LS.get('edl_consent') === '1';
