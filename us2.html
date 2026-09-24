@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>USA Quiz</title>
+</head>
+<body>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Figtree:wght@500;600;700&display=swap">
+<style>
+:root{
+  --bg:#F5F4F6; --surface:#FFFFFF; --ink:#211C22; --muted:#675F69; --line:#E3DFE5;
+  --accent:#C8102E; --accent-on:#FFFFFF; --accent-soft:#FBE5E9; --stripe2:#FFFFFF;
+  --ok:#1E7A46; --ok-soft:#E1F4E8; --bad:#B42318; --bad-soft:#FDE7E4;
+  --font-d:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --font-b:'Figtree','Segoe UI',system-ui,sans-serif;
+  --font-m:ui-monospace,'Cascadia Mono',Consolas,monospace;
+  color-scheme:light dark;
+}
+:root[data-country="uk"]{ --accent:#1D2B5E; --accent-soft:#E3E7F4; --stripe2:#C8102E; }
+:root[data-country="gr"]{ --accent:#0D5EAF; --accent-soft:#E3EEFB; --stripe2:#FFFFFF; }
+:root[data-country="us"]{ --accent:#3C3B6E; --accent-soft:#E4E4F0; --stripe2:#B22234; }
+:root[data-country="es"]{ --accent:#AA151B; --accent-soft:#FBE5E6; --stripe2:#F1BF00; }
+@media (prefers-color-scheme:dark){
+:root:not([data-theme="light"]){
+  --bg:#161317; --surface:#221D25; --ink:#F2EEF3; --muted:#B0A6B3; --line:#3B333F;
+  --accent:#FF6079; --accent-on:#1C0509; --accent-soft:#3B1B22; --stripe2:#F2EEF3;
+  --ok:#4CC37F; --ok-soft:#173021; --bad:#FF8073; --bad-soft:#3B1E1B;
+}
+:root[data-country="uk"]:not([data-theme="light"]){
+  --accent:#9AAAFF; --accent-on:#0C1230; --accent-soft:#222847; --stripe2:#FF6079;
+}
+:root[data-country="gr"]:not([data-theme="light"]){
+  --accent:#6FA8E8; --accent-on:#0B1B2E; --accent-soft:#1B2A3E; --stripe2:#F2EEF3;
+}
+:root[data-country="us"]:not([data-theme="light"]){
+  --accent:#9C9BE0; --accent-on:#14132B; --accent-soft:#26254A; --stripe2:#FF8A82;
+}
+:root[data-country="es"]:not([data-theme="light"]){
+  --accent:#FF6B70; --accent-on:#2B0A0C; --accent-soft:#3A1315; --stripe2:#FFD84D;
+}
+}
+:root[data-theme="dark"]{
+  --bg:#161317; --surface:#221D25; --ink:#F2EEF3; --muted:#B0A6B3; --line:#3B333F;
+  --accent:#FF6079; --accent-on:#1C0509; --accent-soft:#3B1B22; --stripe2:#F2EEF3;
+  --ok:#4CC37F; --ok-soft:#173021; --bad:#FF8073; --bad-soft:#3B1E1B;
+}
+:root[data-theme="dark"][data-country="uk"]{
+  --accent:#9AAAFF; --accent-on:#0C1230; --accent-soft:#222847; --stripe2:#FF6079;
+}
+:root[data-theme="dark"][data-country="gr"]{
+  --accent:#6FA8E8; --accent-on:#0B1B2E; --accent-soft:#1B2A3E; --stripe2:#F2EEF3;
+}
+:root[data-theme="dark"][data-country="us"]{
+  --accent:#9C9BE0; --accent-on:#14132B; --accent-soft:#26254A; --stripe2:#FF8A82;
+}
+:root[data-theme="dark"][data-country="es"]{
+  --accent:#FF6B70; --accent-on:#2B0A0C; --accent-soft:#3A1315; --stripe2:#FFD84D;
+}
+
+
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--font-b);-webkit-text-size-adjust:100%}
+.geo{max-width:34rem;margin:0 auto;padding:0 16px 48px}
+.geo h1,.geo h2,.geo p{margin:0}
+.stripe{height:10px;margin:0 -16px;background:linear-gradient(90deg,var(--accent) 0 62%,var(--stripe2) 62% 100%);border-bottom:1px solid var(--line)}
+.top{display:flex;justify-content:space-between;align-items:center;padding:16px 0 4px}
+.passport{font:700 .72rem var(--font-b);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.code{font:800 .9rem var(--font-d);letter-spacing:.06em;background:var(--accent);color:var(--accent-on);padding:.2rem .65rem;border-radius:6px}
+h1{font:800 clamp(1.9rem,8vw,2.7rem)/1.04 var(--font-d);letter-spacing:-.02em;text-wrap:balance;margin:.5rem 0 .7rem}
+.meta{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.9rem;margin-bottom:14px;flex-wrap:wrap}
+.meta svg{width:30px;height:auto;border-radius:3px;box-shadow:0 0 0 1px var(--line);flex:none}
+.lead{font-size:1.02rem;margin-bottom:18px;max-width:46ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px}
+label{display:block;font-weight:700;margin-bottom:6px}
+.inp{width:100%;min-height:48px;border:2px solid var(--line);border-radius:12px;padding:0 14px;font:600 1rem var(--font-b);background:var(--surface);color:var(--ink)}
+.inp:focus-visible,.btn:focus-visible,.tile:focus-visible,.opt:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.inp.bad{border-color:var(--bad);background:var(--bad-soft)}
+.inp.ok{border-color:var(--ok);background:var(--ok-soft)}
+.err{color:var(--bad);font-size:.9rem;min-height:1.3em;margin:6px 0 10px;font-weight:600}
+.btn{width:100%;min-height:50px;border:0;border-radius:12px;background:var(--accent);color:var(--accent-on);font:800 1.05rem var(--font-d);letter-spacing:.01em;padding:0 20px;cursor:pointer}
+.btn:active{transform:translateY(1px)}
+.small{font-size:.82rem;color:var(--muted);margin-top:12px}
+.banner{background:var(--accent-soft);border:1px dashed var(--accent);border-radius:10px;padding:10px 12px;font-size:.86rem;margin:0 0 16px}
+.banner b{font-weight:800}
+.consent{display:flex;gap:10px;align-items:flex-start;font-size:.85rem;color:var(--muted);margin:14px 0 16px;cursor:pointer}
+.consent input{width:19px;height:19px;flex:none;margin-top:1px;accent-color:var(--accent)}
+.consent.bad{color:var(--bad)}
+
+/* play */
+.bar{display:flex;justify-content:space-between;align-items:baseline;padding:14px 0 10px;font-variant-numeric:tabular-nums}
+.bar .t{font:800 1.5rem var(--font-d)}
+.bar .a{color:var(--muted);font-size:.9rem}
+.task{font:700 .95rem var(--font-b);margin-bottom:14px;color:var(--muted)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.col{display:grid;gap:10px;align-content:start}
+.tile,.opt{min-height:54px;padding:8px 10px;border:2px solid var(--line);border-radius:12px;background:var(--surface);font:700 1rem var(--font-b);color:var(--ink);text-align:center;cursor:pointer;width:100%}
+.tile.sel{border-color:var(--accent);background:var(--accent-soft)}
+.tile.ok,.opt.ok{border-color:var(--ok);background:var(--ok-soft);cursor:default}
+.tile.bad,.opt.bad{border-color:var(--bad);background:var(--bad-soft);animation:shake .35s}
+.tile:disabled,.opt:disabled{cursor:default}
+.progress{margin-top:14px;font-size:.9rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.q-count{font:700 .8rem var(--font-b);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.q-prompt{font:800 1.5rem/1.2 var(--font-d);margin:.3rem 0 .3rem;text-wrap:balance}
+.q-sub{color:var(--muted);margin-bottom:16px}
+.opts{display:grid;gap:10px}
+.opt{text-align:left;padding:10px 16px;font-size:1.05rem}
+.note{margin-top:14px;padding:10px 12px;border-radius:10px;background:var(--ok-soft);border:1px solid var(--ok);font-size:.92rem}
+.rows{display:grid}
+.row{display:grid;gap:8px;padding:16px 0;border-top:1px solid var(--line)}
+.row:first-child{border-top:0;padding-top:4px}
+.visual{font:800 1.9rem var(--font-d);letter-spacing:.16em;line-height:1.1;overflow-wrap:anywhere}
+.visual.emoji{font-size:2.3rem;letter-spacing:.12em}
+.clue{color:var(--muted);font-size:.93rem}
+.pattern{font-family:var(--font-m);letter-spacing:.14em;white-space:pre-wrap;color:var(--ink);font-size:.95rem}
+.answer{display:flex;gap:10px;align-items:center}
+.answer .inp{text-transform:uppercase}
+.mark{font:800 1.3rem var(--font-d);width:1.6rem;text-align:center;flex:none}
+.mark.ok{color:var(--ok)} .mark.bad{color:var(--bad)}
+.feedback{min-height:1.5em;margin:8px 0 12px;font-weight:600}
+
+/* sliding puzzle */
+.pboard{display:grid;gap:3px;background:var(--line);padding:3px;border-radius:14px;aspect-ratio:1/1;max-width:420px;margin:0 auto;box-shadow:0 1px 0 rgba(0,0,0,.04)}
+.ptile{border:0;padding:0;cursor:pointer;border-radius:5px;background-color:var(--surface);background-repeat:no-repeat}
+.ptile.empty{background:transparent;cursor:default}
+.ptile:active:not(.empty){transform:scale(.96)}
+.ptile:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
+.pmoves{margin-top:12px;text-align:center;font-size:.9rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.preview{display:flex;flex-direction:column;gap:8px;margin:0 0 14px;padding:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;font-size:.86rem;color:var(--muted)}
+.preview img{width:100%;max-height:200px;object-fit:cover;border-radius:10px;box-shadow:0 0 0 1px var(--line)}
+.preview span{padding:0 2px}
+.preview span::before{content:'Toto skladáš — pozri sem, keď si nie si istý/á: ';font-weight:600;color:var(--ink)}
+
+/* done */
+.done{text-align:center;padding-top:6px}
+.stamp{display:block;margin:6px auto 8px;width:min(240px,72%);height:auto;color:var(--accent);transform:rotate(-8deg);animation:thump .55s cubic-bezier(.2,1.4,.4,1)}
+.done h1{margin-top:.2rem}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0 12px;text-align:left}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.stat dt{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.stat dd{margin:2px 0 0;font:800 1.5rem var(--font-d);font-variant-numeric:tabular-nums}
+.stat.wide{grid-column:1/-1}
+.stat.wide dd{font:700 1rem var(--font-b);overflow-wrap:anywhere}
+.sent{display:inline-flex;align-items:center;gap:8px;font-size:.92rem;font-weight:600;margin:6px 0 14px}
+.sent i{width:10px;height:10px;border-radius:50%;background:var(--muted);display:inline-block}
+.sent.ok i{background:var(--ok)} .sent.queued i{background:var(--bad)}
+.next{color:var(--muted);max-width:40ch;margin:0 auto}
+details.sandbox{margin-top:22px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+details.sandbox summary{cursor:pointer;font-weight:700;font-size:.92rem}
+.tw{overflow-x:auto;margin-top:10px}
+.tw table{border-collapse:collapse;font-size:.8rem;white-space:nowrap}
+.tw th,.tw td{border-bottom:1px solid var(--line);padding:5px 10px;text-align:left}
+.tw th{color:var(--muted);font-weight:700}
+.linkbtn{background:none;border:0;color:var(--accent);font:700 .85rem var(--font-b);padding:8px 0 0;cursor:pointer;text-decoration:underline}
+
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@keyframes thump{0%{transform:rotate(-8deg) scale(1.6);opacity:0}100%{transform:rotate(-8deg) scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){.stamp,.tile.bad,.opt.bad{animation:none}}
+</style>
+<div class="geo" id="geo"></div>
+<script>window.EDL_CONFIG={"formUrl": "https://docs.google.com/forms/d/e/1FAIpQLSd2c2y2bDAQhZ5rm5KjtrlmIfvrBdPucFA0OCcn98mRJY2Ywg/formResponse", "entries": {"email": "entry.1906712253", "game": "entry.1165327243", "country": "entry.134984735", "task": "entry.574379517", "status": "entry.39632983", "time": "entry.134508296", "attempts": "entry.1056326339", "session": "entry.1294176923", "consent": "entry.892461576"}, "allowedDomain": "", "mode": "live"};</script>
+<script>
+(function () {
+  'use strict';
+  var CFG = window.EDL_CONFIG;
+  var LIVE = CFG.mode === 'live' && CFG.formUrl && CFG.formUrl.indexOf('PASTE') < 0;
+
+  /* ---------- helpers ---------- */
+  function h(tag, attrs) {
+    var e = document.createElement(tag);
+    attrs = attrs || {};
+    for (var k in attrs) {
+      if (k === 'class') e.className = attrs[k];
+      else if (k === 'html') e.innerHTML = attrs[k];
+      else if (k === 'text') e.textContent = attrs[k];
+      else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), attrs[k]);
+      else e.setAttribute(k, attrs[k]);
+    }
+    for (var i = 2; i < arguments.length; i++) {
+      var c = arguments[i];
+      if (c == null) continue;
+      e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    }
+    return e;
+  }
+  var LS = {
+    get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+    del: function (k) { try { localStorage.removeItem(k); } catch (e) {} }
+  };
+  function shuffle(a) {
+    a = a.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function norm(s) {
+    return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .replace(/&/g, 'and').replace(/[^a-z0-9]/g, '');
+  }
+  function mmss(sec) { var m = Math.floor(sec / 60), s = sec % 60; return m + ':' + (s < 10 ? '0' : '') + s; }
+
+  var FLAGS = {
+    at: '<svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#fff"/><rect width="30" height="6.67" fill="#C8102E"/><rect y="13.33" width="30" height="6.67" fill="#C8102E"/></svg>',
+    uk: '<svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="uj-s"><path d="M0,0 v30 h60 v-30 z"/></clipPath><clipPath id="uj-t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath><g clip-path="url(#uj-s)"><path d="M0,0 v30 h60 v-30 z" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#uj-t)" stroke="#C8102E" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></g></svg>',
+    gr: '<svg viewBox="0 0 27 18" aria-hidden="true"><rect width="27" height="18" fill="#fff"/>' +
+      Array.from({length: 9}).map(function (_, i) { return i % 2 === 0 ? '<rect y="' + (i * 2) + '" width="27" height="2" fill="#0D5EAF"/>' : ''; }).join('') +
+      '<rect width="10" height="10" fill="#0D5EAF"/><rect x="4" width="2" height="10" fill="#fff"/><rect y="4" width="10" height="2" fill="#fff"/></svg>',
+    us: '<svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#fff"/>' +
+      Array.from({length: 13}).map(function (_, i) { return i % 2 === 0 ? '<rect y="' + (i * 20 / 13).toFixed(2) + '" width="30" height="' + (20 / 13).toFixed(2) + '" fill="#B22234"/>' : ''; }).join('') +
+      '<rect width="13" height="' + (20 * 7 / 13).toFixed(2) + '" fill="#3C3B6E"/>' +
+      Array.from({length: 6}).map(function (_, i) { var row = Math.floor(i / 3), col = i % 3; return '<circle cx="' + (2.2 + col * 4.3) + '" cy="' + (1.6 + row * 4.2) + '" r="0.6" fill="#fff"/>'; }).join('') +
+      '</svg>',
+    es: '<svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#AA151B"/><rect y="5" width="30" height="10" fill="#F1BF00"/></svg>'
+  };
+
+  /* ---------- state ---------- */
+  var G, app;
+  var S = { email: '', session: '', t0: 0, attempts: 0, solved: false, timer: null, sentEl: null };
+
+  /* ---------- data out ---------- */
+  function post(row) {
+    var b = new URLSearchParams();
+    Object.keys(CFG.entries).forEach(function (k) { b.append(CFG.entries[k], String(row[k])); });
+    return fetch(CFG.formUrl, { method: 'POST', mode: 'no-cors', body: b, keepalive: true });
+  }
+  function setSent(state) {
+    if (!S.sentEl) return;
+    var txt = {
+      sending: 'Odosielam výsledok…',
+      ok: 'Výsledok odoslaný učiteľke.',
+      queued: 'Zatiaľ bez internetu. Nechaj stránku otvorenú, odošleme to hneď po pripojení.',
+      test: 'Testovací režim: nič sa neodosiela, dáta sú len v tomto zariadení.'
+    };
+    S.sentEl.className = 'sent ' + state;
+    S.sentEl.lastChild.textContent = txt[state];
+  }
+  function queueRow(row) {
+    var q = []; try { q = JSON.parse(LS.get('edl_outbox') || '[]'); } catch (e) {}
+    q.push(row); LS.set('edl_outbox', JSON.stringify(q));
+  }
+  function flush() {
+    var q = []; try { q = JSON.parse(LS.get('edl_outbox') || '[]'); } catch (e) {}
+    if (!q.length || !LIVE) return;
+    LS.del('edl_outbox');
+    q.forEach(function (r) { post(r).catch(function () { queueRow(r); }); });
+  }
+  function deliver(row) {
+    if (!LIVE) {
+      var log = []; try { log = JSON.parse(LS.get('edl_test_log') || '[]'); } catch (e) {}
+      row.ts = new Date().toLocaleString('sk-SK');
+      log.push(row); LS.set('edl_test_log', JSON.stringify(log));
+      setSent('test'); refreshSandbox();
+      return;
+    }
+    setSent('sending');
+    post(row).then(function () { setSent('ok'); flush(); })
+      .catch(function () { queueRow(row); setSent('queued'); });
+  }
+  function send(status) {
+    deliver({
+      email: S.email, game: G.id, country: G.country, task: G.taskType, status: status,
+      time: status === 'solved' ? elapsed() : 0, attempts: status === 'solved' ? S.attempts : 0,
+      session: S.session, consent: 'ano'
+    });
+  }
+  function elapsed() { return Math.max(1, Math.round((Date.now() - S.t0) / 1000)); }
+
+  /* ---------- sandbox panel (test mode) ---------- */
+  var sandboxBody = null;
+  function sandbox(open) {
+    var d = h('details', { class: 'sandbox' });
+    if (open) d.setAttribute('open', '');
+    d.appendChild(h('summary', { text: 'Testovanie: čo sa zapíše do Google Formu / tabuľky' }));
+    d.appendChild(h('p', { class: 'small', text: 'Každý riadok = jedna odpoveď vo formulári. Stĺpec „Časová pečiatka“ pridá Google sám.' }));
+    var wrap = h('div', { class: 'tw' });
+    sandboxBody = wrap; d.appendChild(wrap);
+    d.appendChild(h('button', { class: 'linkbtn', type: 'button', text: 'Vymazať testovacie dáta', onclick: function () { LS.del('edl_test_log'); refreshSandbox(); } }));
+    refreshSandbox();
+    return d;
+  }
+  function refreshSandbox() {
+    if (!sandboxBody) return;
+    var log = []; try { log = JSON.parse(LS.get('edl_test_log') || '[]'); } catch (e) {}
+    if (!log.length) { sandboxBody.textContent = 'Zatiaľ nič. Začni hru a tu sa objavia riadky.'; return; }
+    var cols = [['ts', 'Časová pečiatka'], ['email', 'E-mail'], ['game', 'Hra'], ['country', 'Krajina'], ['task', 'Typ úlohy'], ['status', 'Stav'], ['time', 'Čas (s)'], ['attempts', 'Pokusy'], ['session', 'Session'], ['consent', 'Súhlas']];
+    var t = h('table'), tr = h('tr');
+    cols.forEach(function (c) { tr.appendChild(h('th', { text: c[1] })); });
+    t.appendChild(h('thead', {}, tr));
+    var tb = h('tbody');
+    log.forEach(function (r) { var x = h('tr'); cols.forEach(function (c) { x.appendChild(h('td', { text: String(r[c[0]]) })); }); tb.appendChild(x); });
+    t.appendChild(tb); sandboxBody.innerHTML = ''; sandboxBody.appendChild(t);
+  }
+
+  /* ---------- screens ---------- */
+  function show(node) { app.innerHTML = ''; app.appendChild(node); window.scrollTo(0, 0); }
+  function header() {
+    return h('div', {}, h('div', { class: 'stripe', 'aria-hidden': 'true' }),
+      h('div', { class: 'top' }, h('span', { class: 'passport', text: 'Language Passport' }), h('span', { class: 'code', text: G.id })));
+  }
+  function banner() {
+    if (LIVE) return null;
+    var live = CFG.mode === 'live';
+    return h('div', { class: 'banner', html: live
+      ? '<b>Formulár ešte nie je pripojený.</b> Hra funguje, ale výsledky sa neodosielajú do Google Formu (ukladajú sa len v tomto zariadení).'
+      : '<b>Testovací režim.</b> Hra funguje naostro, ale výsledky sa neposielajú do Google Formu — ukážeme ti ich v tabuľke pod hrou.' });
+  }
+
+  function loginScreen() {
+    var root = h('div', {});
+    root.appendChild(header());
+    root.appendChild(h('h1', { text: G.title }));
+    root.appendChild(h('div', { class: 'meta', html: FLAGS[G.flag] + '<span>' + G.country + ' · ' + G.taskType + ' · ' + G.minutes + '</span>' }));
+    root.appendChild(h('p', { class: 'lead', text: G.intro }));
+    var b = banner(); if (b) root.appendChild(b);
+
+    var input = h('input', { class: 'inp', id: 'email', type: 'email', name: 'email', autocomplete: 'email', inputmode: 'email', autocapitalize: 'none', spellcheck: 'false', placeholder: 'meno.priezvisko@skola.sk', required: '' });
+    input.value = LS.get('edl_email') || '';
+    var err = h('p', { class: 'err', role: 'alert', id: 'email-err' });
+    var consentBox = h('input', { type: 'checkbox', id: 'consent' });
+    consentBox.checked = LS.get('edl_consent') === '1';
+    var consentLabel = h('label', { class: 'consent', for: 'consent' }, consentBox,
+      h('span', { text: 'Súhlasím, že sa moje meno/e-mail a výsledky tejto hry uložia a použijú na vyhodnotenie súťaže Európsky deň jazykov 2026. Po vyhodnotení sa údaje vymažú.' }));
+    var form = h('form', { class: 'card', novalidate: '' },
+      h('label', { for: 'email', text: 'Tvoj školský e-mail' }), input, err,
+      consentLabel,
+      h('button', { class: 'btn', type: 'submit', text: 'Začať hru' }),
+      h('p', { class: 'small', text: 'E-mail použijeme len na zapísanie tvojich výsledkov do súťaže Európskeho dňa jazykov. Čas sa začne merať po stlačení tlačidla.' }));
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = input.value.trim().toLowerCase();
+      var ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+      if (!ok) { input.classList.add('bad'); err.textContent = 'Zadaj celý e-mail, napr. meno.priezvisko@skola.sk'; input.focus(); return; }
+      if (CFG.allowedDomain) {
+        var d = v.split('@')[1], a = CFG.allowedDomain.toLowerCase();
+        if (d !== a && d.slice(-(a.length + 1)) !== '.' + a) { input.classList.add('bad'); err.textContent = 'Použi svoj školský e-mail (koncovka @' + a + ').'; input.focus(); return; }
+      }
+      if (!consentBox.checked) { consentLabel.classList.add('bad'); err.textContent = 'Zaškrtni súhlas so spracovaním údajov, inak hru nespustíme.'; return; }
+      consentLabel.classList.remove('bad');
+      S.email = v; LS.set('edl_email', v); LS.set('edl_consent', '1'); start();
+    });
+    input.addEventListener('input', function () { input.classList.remove('bad'); err.textContent = ''; });
+    consentBox.addEventListener('change', function () { consentLabel.classList.remove('bad'); err.textContent = ''; });
+    root.appendChild(form);
+    if (!LIVE) root.appendChild(sandbox(false));
+    show(root);
+  }
+
+  function start() {
+    S.session = Math.random().toString(36).slice(2, 8);
+    S.t0 = Date.now(); S.attempts = 0; S.solved = false;
+    S.sentEl = null;
+    send('started');
+    var timerEl = h('span', { class: 't', text: '0:00' });
+    var attEl = h('span', { class: 'a', text: 'Pokusy: 0' });
+    S.attEl = attEl;
+    S.timer = setInterval(function () { timerEl.textContent = mmss(elapsed()); }, 500);
+    var root = h('div', {});
+    root.appendChild(header());
+    root.appendChild(h('div', { class: 'bar' }, timerEl, attEl));
+    root.appendChild(h('p', { class: 'task', text: G.task }));
+    var box = h('div', {});
+    root.appendChild(box);
+    show(root);
+    G.mount(box, {
+      attempt: function () { S.attempts++; attEl.textContent = 'Pokusy: ' + S.attempts; },
+      solve: solve
+    });
+  }
+
+  function stampSvg(time) {
+    return '<svg class="stamp" viewBox="0 0 200 200" role="img" aria-label="Pečiatka: hra ' + G.id + ' vyriešená">' +
+      '<defs><path id="edl-arc" d="M100,100 m-73,0 a73,73 0 1,1 146,0 a73,73 0 1,1 -146,0"/></defs>' +
+      '<circle cx="100" cy="100" r="94" fill="none" stroke="currentColor" stroke-width="4"/>' +
+      '<circle cx="100" cy="100" r="88" fill="none" stroke="currentColor" stroke-width="1.5"/>' +
+      '<circle cx="100" cy="100" r="56" fill="none" stroke="currentColor" stroke-width="1.5"/>' +
+      '<text font-family="Figtree,Segoe UI,sans-serif" font-weight="700" font-size="12" fill="currentColor"><textPath href="#edl-arc" textLength="452" lengthAdjust="spacing">SOSNO · EUROPEAN DAY OF LANGUAGES · 28.9.2026 ·</textPath></text>' +
+      '<text x="100" y="98" text-anchor="middle" font-family="Bricolage Grotesque,Segoe UI,sans-serif" font-weight="800" font-size="34" fill="currentColor">' + G.id + '</text>' +
+      '<text x="100" y="118" text-anchor="middle" font-family="Figtree,Segoe UI,sans-serif" font-weight="800" font-size="12" letter-spacing="3" fill="currentColor">SOLVED</text>' +
+      '<text x="100" y="136" text-anchor="middle" font-family="Figtree,Segoe UI,sans-serif" font-weight="700" font-size="12" fill="currentColor">' + mmss(time) + '</text></svg>';
+  }
+
+  function solve() {
+    if (S.solved) return;
+    S.solved = true; clearInterval(S.timer);
+    var time = elapsed();
+    var root = h('div', { class: 'done' });
+    root.appendChild(header());
+    root.appendChild(h('div', { html: stampSvg(time) }));
+    root.appendChild(h('h1', { text: 'Vyriešené!' }));
+    root.appendChild(h('dl', { class: 'stats' },
+      h('div', { class: 'stat' }, h('dt', { text: 'Tvoj čas' }), h('dd', { text: mmss(time) })),
+      h('div', { class: 'stat' }, h('dt', { text: 'Pokusy' }), h('dd', { text: String(S.attempts) })),
+      h('div', { class: 'stat wide' }, h('dt', { text: 'Zapísané pre' }), h('dd', { text: S.email }))));
+    S.sentEl = h('p', { class: 'sent' }, h('i'), document.createTextNode(''));
+    root.appendChild(S.sentEl);
+    root.appendChild(h('p', { class: 'next', text: 'Hru ' + G.id + ' máš splnenú. Hľadaj v škole ďalší QR kód — čím viac hier a čím rýchlejšie, tým bližšie k cene.' }));
+    if (!LIVE) root.appendChild(sandbox(true));
+    show(root);
+    send('solved');
+  }
+
+  /* ---------- shared UI: list of typed answers ---------- */
+  function answerList(root, api, items, o) {
+    o = o || {};
+    var rows = items.map(function (it) {
+      var inp = h('input', { class: 'inp', type: 'text', autocomplete: 'off', autocapitalize: 'none', autocorrect: 'off', spellcheck: 'false', 'aria-label': 'Odpoveď: ' + it.clue });
+      var mark = h('span', { class: 'mark', 'aria-hidden': 'true' });
+      var vis = h('div', { class: 'visual' + (o.emoji ? ' emoji' : ''), text: it.visual });
+      var kids = [vis];
+      if (it.pattern) kids.push(h('div', { class: 'pattern', text: it.pattern }));
+      kids.push(h('div', { class: 'clue', text: it.clue }));
+      kids.push(h('div', { class: 'answer' }, inp, mark));
+      var row = h('div', { class: 'row' }); kids.forEach(function (k) { row.appendChild(k); });
+      inp.addEventListener('input', function () { inp.classList.remove('bad'); mark.textContent = ''; mark.className = 'mark'; });
+      inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); check(); } });
+      return { it: it, inp: inp, mark: mark, done: false, row: row };
+    });
+    var list = h('div', { class: 'rows' }); rows.forEach(function (r) { list.appendChild(r.row); });
+    var fb = h('p', { class: 'feedback', 'aria-live': 'polite' });
+    var btn = h('button', { class: 'btn', type: 'button', text: 'Skontrolovať', onclick: check });
+    root.appendChild(list); root.appendChild(fb); root.appendChild(btn);
+
+    function check() {
+      var any = rows.some(function (r) { return !r.done && r.inp.value.trim(); });
+      if (!any) { fb.textContent = 'Najprv niečo napíš.'; return; }
+      api.attempt();
+      rows.forEach(function (r) {
+        if (r.done || !r.inp.value.trim()) return;
+        var v = norm(r.inp.value);
+        var good = r.it.accept.some(function (a) { return norm(a) === v; });
+        if (good) { r.done = true; r.inp.disabled = true; r.inp.classList.add('ok'); r.mark.textContent = '✓'; r.mark.className = 'mark ok'; }
+        else { r.inp.classList.add('bad'); r.mark.textContent = '✗'; r.mark.className = 'mark bad'; }
+      });
+      var n = rows.filter(function (r) { return r.done; }).length;
+      if (n === rows.length) { fb.textContent = 'Všetko správne!'; btn.disabled = true; setTimeout(api.solve, 600); }
+      else fb.textContent = n + ' / ' + rows.length + ' správne. Oprav červené a skús znova.';
+    }
+  }
+
+  /* ---------- shared UI: sliding tile puzzle ---------- */
+  function slidingPuzzle(root, api, opts) {
+    var n = opts.size || 3, total = n * n, empty = total - 1;
+    var order = []; for (var i = 0; i < total; i++) order.push(i);
+    var moves = 0, solved = false;
+    if (opts.caption) root.appendChild(h('div', { class: 'preview' },
+      h('img', { src: opts.image, alt: '' }), h('span', { text: opts.caption })));
+    var board = h('div', { class: 'pboard', role: 'group', 'aria-label': 'posuvná skladačka' });
+    board.style.gridTemplateColumns = 'repeat(' + n + ',1fr)';
+    var movesEl = h('p', { class: 'pmoves' });
+    function adjacent(a, b) {
+      var ra = Math.floor(a / n), ca = a % n, rb = Math.floor(b / n), cb = b % n;
+      return (ra === rb && Math.abs(ca - cb) === 1) || (ca === cb && Math.abs(ra - rb) === 1);
+    }
+    function paint() {
+      board.innerHTML = '';
+      order.forEach(function (piece, idx) {
+        if (piece === empty) { board.appendChild(h('div', { class: 'ptile empty', 'aria-hidden': 'true' })); return; }
+        var row = Math.floor(piece / n), col = piece % n;
+        var posX = (n === 1 ? 0 : col * 100 / (n - 1)) + '%', posY = (n === 1 ? 0 : row * 100 / (n - 1)) + '%';
+        var btn = h('button', {
+          class: 'ptile', type: 'button', 'aria-label': 'dlaždica ' + (piece + 1),
+          style: 'background-image:url(' + opts.image + ');background-size:' + (n * 100) + '% ' + (n * 100) + '%;background-position:' + posX + ' ' + posY + ';'
+        });
+        btn.addEventListener('click', function () { tryMove(idx); });
+        board.appendChild(btn);
+      });
+      movesEl.textContent = 'Ťahy: ' + moves;
+    }
+    function tryMove(idx) {
+      if (solved) return;
+      var e = order.indexOf(empty);
+      if (!adjacent(idx, e)) return;
+      var tmp = order[idx]; order[idx] = order[e]; order[e] = tmp;
+      moves++; api.attempt(); paint();
+      if (order.every(function (v, i) { return v === i; })) { solved = true; setTimeout(api.solve, 500); }
+    }
+    var shuffleSteps = opts.shuffleSteps || (n <= 2 ? 6 : 16);
+    var lastEmptyPos = -1;
+    for (var s = 0; s < shuffleSteps; s++) {
+      var e = order.indexOf(empty), neigh = [];
+      for (var k = 0; k < total; k++) if (adjacent(k, e) && k !== lastEmptyPos) neigh.push(k);
+      if (!neigh.length) for (var k2 = 0; k2 < total; k2++) if (adjacent(k2, e)) neigh.push(k2);
+      var pick = neigh[Math.floor(Math.random() * neigh.length)];
+      var t = order[pick]; order[pick] = order[e]; order[e] = t;
+      lastEmptyPos = e;
+    }
+    root.appendChild(board); root.appendChild(movesEl);
+    paint();
+    window.__puzzleOrder = function () { return order.slice(); };
+  }
+
+  /* ---------- boot ---------- */
+  function boot(game) {
+    G = game;
+    document.documentElement.setAttribute('data-country', G.flag);
+    app = document.getElementById('geo');
+    loginScreen();
+    window.addEventListener('online', flush);
+    setInterval(flush, 20000); flush();
+  }
+  window.EDL = { h: h, shuffle: shuffle, norm: norm, answerList: answerList, slidingPuzzle: slidingPuzzle, boot: boot };
+})();
+</script>
+<script>
+var GAME = {
+  id: 'US-2', flag: 'us', country: 'Amerika', taskType: 'Kvíz – USA', minutes: 'cca 2 min',
+  title: 'USA Quiz',
+  intro: 'Koľko toho vieš o Spojených štátoch? Vyber správnu odpoveď.',
+  task: 'Vyber správnu odpoveď. Ďalšia otázka príde po správnej odpovedi.',
+  qs: [
+    { q: 'Which city is home to the Statue of Liberty?', opts: ['Boston', 'New York', 'Chicago'], a: 'New York', note: 'The statue stands on Liberty Island in New York Harbor. It was a gift from France in 1886.' },
+    { q: 'In which state is the Grand Canyon?', opts: ['Arizona', 'Nevada', 'Utah'], a: 'Arizona', note: 'The canyon was carved by the Colorado River over millions of years.' },
+    { q: 'How many states does the USA have?', opts: ['48', '50', '52'], a: '50', note: 'The last two states, Alaska and Hawaii, joined in 1959.' },
+    { q: 'What is the official currency of the USA?', opts: ['Dollar', 'Peso', 'Pound'], a: 'Dollar', note: 'The US dollar is also one of the most widely used currencies in world trade.' },
+    { q: 'Mount Rushmore has the faces of four US presidents carved into a mountain. In which state is it?', opts: ['South Dakota', 'Wyoming', 'Montana'], a: 'South Dakota', note: 'The four presidents are Washington, Jefferson, Theodore Roosevelt and Lincoln.' },
+    { q: 'What is the capital city of the USA?', opts: ['New York', 'Washington, D.C.', 'Los Angeles'], a: 'Washington, D.C.', note: 'Washington, D.C. is not part of any state — it is a separate federal district.' }
+  ],
+  mount: function (root, api) {
+    var h = EDL.h, qs = GAME.qs, i = 0;
+    var box = h('div', {}); root.appendChild(box);
+    function render() {
+      var q = qs[i]; box.innerHTML = '';
+      box.appendChild(h('p', { class: 'q-count', text: 'Otázka ' + (i + 1) + ' / ' + qs.length }));
+      box.appendChild(h('h2', { class: 'q-prompt', text: q.q }));
+      var opts = h('div', { class: 'opts' }), btns = [], locked = false;
+      EDL.shuffle(q.opts).forEach(function (o) {
+        var b = h('button', { class: 'opt', type: 'button', text: o });
+        b.addEventListener('click', function () {
+          if (locked || b.disabled) return;
+          api.attempt();
+          if (o === q.a) {
+            locked = true; b.classList.add('ok');
+            btns.forEach(function (x) { x.disabled = true; });
+            box.appendChild(h('p', { class: 'note', text: q.note }));
+            setTimeout(function () { i++; if (i < qs.length) render(); else api.solve(); }, 1500);
+          } else { b.classList.add('bad'); b.disabled = true; }
+        });
+        btns.push(b); opts.appendChild(b);
+      });
+      box.appendChild(opts);
+    }
+    render();
+  }
+};
+EDL.boot(GAME);
+</script>
+</body>
+</html>
